@@ -23,7 +23,7 @@
       return Math.cos(v);
     }
 
-    function renderPlasma() {
+    function renderPlasma(lastFrameMillisec) {
 
       var canvas = document.getElementById("plasma-canvas");
       var ctx = canvas.getContext("2d");
@@ -59,19 +59,23 @@
 
       ctx.putImageData(imageData, 0, 0);
 
+      // Draw fps
+      var fps = 1000 / lastFrameMillisec;
+      if (fps) {
+        ctx.font = "bold 20px 'Helvetica Neue', Helvetica, Arial, sans-serif";
+        var fpsText = "Fps: " + fps.toFixed(1);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.strokeStyle = '#444444';
+        ctx.fillText(fpsText, 10, 22);
+        ctx.strokeText(fpsText, 10, 22);
+      }
+
       ctx.restore();
     }
 
-    function renderAnimation(fun) {
-      fun();
-      requestAnimFrame(function(time){
-        //console.log("time=" + time)
-        renderAnimation(fun);
-      });
-    }
-
-    $(window).load(function(){
-      renderAnimation(renderPlasma);
+    $(window).load(function() {
+      AnimationHelper.registerAnimCallback(renderPlasma);
+      AnimationHelper.startAnim();
     });
   </script>
 
