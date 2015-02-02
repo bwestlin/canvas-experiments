@@ -15,12 +15,27 @@
       return Math.sqrt((x - w / 2) * (x - w / 2) + (y - h / 2) * (y - h / 2));
     }
 
+    var sinTable = [];
+    for (var a = 0; a < 360; a++) {
+      sinTable.push(Math.sin(a * Math.PI / 180));
+    }
+
+    var cosTable = [];
+    for (var a = 0; a < 360; a++) {
+      cosTable.push(Math.cos(a * Math.PI / 180));
+    }
+
     function sin(v) {
-      return Math.sin(v);
+      var a = parseInt(v * 180 / Math.PI) % 360;
+      return sinTable[a];
+      //return Math.sin(v);
+
     }
 
     function cos(v) {
-      return Math.cos(v);
+      var a = parseInt(v * 180 / Math.PI) % 360;
+      return cosTable[a];
+      //return Math.cos(v);
     }
 
     var startMillisec = new Date().getTime();
