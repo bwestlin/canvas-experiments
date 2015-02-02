@@ -4,6 +4,20 @@
   <meta charset="UTF-8">
   <title>Plasma canvas</title>
 
+  <style>
+    body {
+      padding: 0px;
+      margin: 0px;
+    }
+    #stage {
+      width: 480px;
+      height: 320px;
+      position: relative;
+      xborder: 2px solid black
+    }
+    canvas { position: absolute; }
+  </style>
+
   <script src="lib/jquery-2.1.3.min.js"></script>
   <script src="lib/lodash-3.0.1.min.js"></script>
   <script src="js/canvas-helpers.js"></script>
@@ -89,6 +103,17 @@
       }
 
       ctx.restore();
+
+      // Upscale to window size
+      var stage = document.getElementById("stage");
+      var scaleX = window.innerWidth / canvas.width;
+      var scaleY = window.innerHeight / canvas.height;
+
+      var scaleToFit = Math.min(scaleX, scaleY);
+      var scaleToCover = Math.max(scaleX, scaleY);
+
+      stage.style.transformOrigin = "0 0"; //scale from top left
+      stage.style.transform = "scale(" + scaleToCover + ")";
     }
 
     $(window).load(function() {
@@ -100,7 +125,9 @@
 </head>
 <body>
 
-  <canvas id="plasma-canvas" width="400" height="400" style="border: 1px solid gray;"></canvas>
+  <div id="stage">
+    <canvas id="plasma-canvas" width="480" height="320"></canvas>
+  </div>
 
 </body>
 </html>
