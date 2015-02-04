@@ -76,7 +76,7 @@
               sin(dist(x + time, y, 128.0 * sin(time), 128.0 * sin(time)) / 8.0) +
               sin(dist(x, y, 64.0 * cos(time), 64.0 * cos(time)) / 16.0) +
               sin(dist(x, y + time / 7, 192.0, 64) / 17.0) +
-              sin(dist(x, y, 192.0, 100.0) / 8.0);
+              sin(dist(x, y, 192.0 + 200 + sin(time) * 200, 100.0 + 200 + sin(time / 2) * 200) / 8.0);
 
           var color = parseInt(4 + value) * 32;
 
