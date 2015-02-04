@@ -82,8 +82,8 @@
 
           var dataPos = (y * w * 4) + (x * 4);
 
-          imageData.data[dataPos + 0] = color;
-          imageData.data[dataPos + 1] = color * 2;
+          imageData.data[dataPos + 0] = color * 2;
+          imageData.data[dataPos + 1] = color;
           imageData.data[dataPos + 2] = 255 - color;
           imageData.data[dataPos + 3] = 255;
         }
