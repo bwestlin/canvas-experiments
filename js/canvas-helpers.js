@@ -47,3 +47,77 @@ var AnimationHelper = (function () {
     stopAnim: stopAnim
   };
 })();
+
+
+/**
+ * Canvas animation helper plugin
+ */
+(function($) {
+
+  function createCanvasRenderer(canvasElem, settings) {
+    var firstRender = true;
+    var bgColorWithAlpha = !settings.bgColor || /^rgba/.test(settings.bgColor);
+
+    return function(lastFrameMillisec) {
+
+      var ctx = canvasElem.getContext("2d");
+      if (settings.bgColor) {
+        ctx.save();
+
+        if (firstRender) {
+          if (bgColorWithAlpha) {
+            // TODO Need to get the rgb without a from the color
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+          }
+          firstRender = false;
+        }
+
+        ctx.fillStyle = settings.bgColor;
+        ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+        ctx.restore();
+      }
+      else {
+        ctx.clearRect(0, 0, canvasElem.width, canvasElem.height);
+      }
+
+      ctx.save();
+
+      try {
+        settings.renderer(ctx, lastFrameMillisec);
+      }
+      catch (e) {
+        console.error(e);
+      }
+
+      ctx.restore();
+    }
+
+  }
+
+  /**
+   *
+   * @param options The options
+   * @param {function} options.renderer The rendering function
+   * @param {boolean} options.displayFps Display fps (frames per second) or not
+   * @param {string} options.scaling Apply a scaling mechanism
+   * @param {string} options.bgColor Use a specific background color
+   */
+  $.fn.canvasAnimation = function(options) {
+
+    var defaults = {
+      renderer: function (ctx) {},
+      displayFps: false,
+      scaling: null,
+      bgColor: null
+    };
+
+    var settings = $.extend( {}, defaults, options );
+
+    return this.each(function() {
+      AnimationHelper.registerAnimCallback(createCanvasRenderer(this, settings));
+      AnimationHelper.startAnim();
+    });
+  };
+
+})(jQuery);
