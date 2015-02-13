@@ -70,14 +70,16 @@ var AnimationHelper = (function () {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
           }
-          firstRender = false;
         }
 
-        ctx.fillStyle = settings.bgColor;
-        ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+        if (!settings.noClear || firstRender) {
+          ctx.fillStyle = settings.bgColor;
+          ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+        }
         ctx.restore();
+        firstRender = false;
       }
-      else {
+      else if (!settings.noClear) {
         ctx.clearRect(0, 0, canvasElem.width, canvasElem.height);
       }
 
@@ -102,6 +104,7 @@ var AnimationHelper = (function () {
    * @param {boolean} options.displayFps Display fps (frames per second) or not
    * @param {string} options.scaling Apply a scaling mechanism
    * @param {string} options.bgColor Use a specific background color
+   * @param {string} options.noClear Skip clearing of background on each frame
    */
   $.fn.canvasAnimation = function(options) {
 
@@ -109,7 +112,8 @@ var AnimationHelper = (function () {
       renderer: function (ctx) {},
       displayFps: false,
       scaling: null,
-      bgColor: null
+      bgColor: null,
+      noClear: false
     };
 
     var settings = $.extend( {}, defaults, options );
