@@ -84,17 +84,28 @@ var AnimationHelper = (function () {
       }
 
       ctx.save();
-
       try {
         settings.renderer(ctx, lastFrameMillisec);
       }
       catch (e) {
         console.error(e);
       }
-
       ctx.restore();
-    }
 
+      if (settings.showFps) {
+        var fps = 1000 / lastFrameMillisec;
+        if (fps) {
+          ctx.save();
+          ctx.font = "bold 20px 'Helvetica Neue', Helvetica, Arial, sans-serif";
+          var fpsText = "Fps: " + fps.toFixed(1 );
+          ctx.fillStyle = '#FFFFFF';
+          ctx.strokeStyle = '#444444';
+          ctx.fillText(fpsText, 10, 22);
+          ctx.strokeText(fpsText, 10, 22);
+          ctx.restore();
+        }
+      }
+    }
   }
 
   /**
@@ -104,7 +115,8 @@ var AnimationHelper = (function () {
    * @param {boolean} options.displayFps Display fps (frames per second) or not
    * @param {string} options.scaling Apply a scaling mechanism
    * @param {string} options.bgColor Use a specific background color
-   * @param {string} options.noClear Skip clearing of background on each frame
+   * @param {boolean} options.noClear Skip clearing of background on each frame
+   * @param {boolean} options.showFps Show frames per second
    */
   $.fn.canvasAnimation = function(options) {
 
@@ -113,10 +125,11 @@ var AnimationHelper = (function () {
       displayFps: false,
       scaling: null,
       bgColor: null,
-      noClear: false
+      noClear: false,
+      showFps: false
     };
 
-    var settings = $.extend( {}, defaults, options );
+    var settings = $.extend({}, defaults, options);
 
     return this.each(function() {
       AnimationHelper.registerAnimCallback(createCanvasRenderer(this, settings));
