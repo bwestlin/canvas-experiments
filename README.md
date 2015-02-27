@@ -2,6 +2,8 @@
 
 These are some graphical effects using the Html5 Canvas element that I'm currently experimenting with.
 
+See it in action [here](https://rawgit.com/bwestlin/canvas-experiments/master/index.html).
+
 
 ## Licence ##
 
