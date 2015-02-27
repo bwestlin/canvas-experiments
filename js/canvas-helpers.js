@@ -54,29 +54,19 @@ var AnimationHelper = (function () {
 (function($) {
 
   function createCanvasRenderer(canvasElem, settings) {
-    var firstRender = true;
-    var bgColorWithAlpha = !settings.bgColor || /^rgba/.test(settings.bgColor);
 
     return function(lastFrameMillisec) {
 
       var ctx = canvasElem.getContext("2d");
+
       if (settings.bgColor) {
         ctx.save();
 
-        if (firstRender) {
-          if (bgColorWithAlpha) {
-            // TODO Need to get the rgb without a from the color
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
-          }
-        }
-
-        if (!settings.noClear || firstRender) {
+        if (!settings.noClear) {
           ctx.fillStyle = settings.bgColor;
           ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
         }
         ctx.restore();
-        firstRender = false;
       }
       else if (!settings.noClear) {
         ctx.clearRect(0, 0, canvasElem.width, canvasElem.height);
