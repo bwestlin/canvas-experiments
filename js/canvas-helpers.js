@@ -1,4 +1,4 @@
-window.requestAnimFrame = (function(callback) {
+window.requestAnimFrame = (function() {
   return window.requestAnimationFrame ||
          window.webkitRequestAnimationFrame ||
          window.mozRequestAnimationFrame ||
@@ -20,7 +20,6 @@ var AnimationHelper = (function () {
 
   function startAnim() {
     animating = true;
-    startTime = null;
     requestAnimFrame(doAnimation);
   }
 
@@ -81,6 +80,7 @@ var AnimationHelper = (function () {
       }
       else if (!settings.noClear) {
         ctx.clearRect(0, 0, canvasElem.width, canvasElem.height);
+        //canvasElem.width = canvasElem.width;
       }
 
       ctx.save();
