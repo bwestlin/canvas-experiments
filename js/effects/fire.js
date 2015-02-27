@@ -62,7 +62,6 @@ var renderFire = (function () {
 $(window).load(function() {
     $("#fire-canvas").canvasAnimation({
         renderer: renderFire,
-        bgColor: "black",
         noClear: true,
         showFps: true
     });
