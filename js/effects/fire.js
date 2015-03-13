@@ -1,7 +1,7 @@
 
 var renderFire = (function () {
   var numRandom = 12373;
-  var randBound = 50;
+  var randBound = 30;
   var randomArray = [];
   var randomIndex = 0;
   for (var r = 0; r < numRandom; r++) {
