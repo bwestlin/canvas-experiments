@@ -55,45 +55,108 @@ var AnimationHelper = (function () {
 
   function createCanvasRenderer(canvasElem, settings) {
 
+    var offscreenBufferRequired = false;
+    var offscreenCanvas;
+
+    var indexedColorConfig = settings.renderer.indexedColorConfig;
+    var palette;
+    if (indexedColorConfig) {
+      offscreenBufferRequired = true;
+
+      palette = [];
+      var numColors = Math.pow(2, indexedColorConfig.paletteBits || 8) | 0;
+      var paletteGen = indexedColorConfig.paletteGenerator;
+      for (var idx = 0; idx < numColors; idx++) {
+        var r = Math.max(0, Math.min(paletteGen.red(idx), 255)) | 0;
+        var g = Math.max(0, Math.min(paletteGen.green(idx), 255)) | 0;
+        var b = Math.max(0, Math.min(paletteGen.blue(idx), 255)) | 0;
+        palette.push([r, g, b]);
+      }
+    }
+
     return function(lastFrameMillisec) {
 
-      var ctx = canvasElem.getContext("2d");
+      var idx;
+      var w = canvasElem.width;
+      var h = canvasElem.height;
+      var screenCtx = canvasElem.getContext("2d");
 
       if (settings.bgColor) {
-        ctx.save();
+        screenCtx.save();
 
         if (!settings.noClear) {
-          ctx.fillStyle = settings.bgColor;
-          ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+          screenCtx.fillStyle = settings.bgColor;
+          screenCtx.fillRect(0, 0, w, h);
         }
-        ctx.restore();
+        screenCtx.restore();
       }
       else if (!settings.noClear) {
-        ctx.clearRect(0, 0, canvasElem.width, canvasElem.height);
-        //canvasElem.width = canvasElem.width;
+        screenCtx.clearRect(0, 0, w, h);
+        //canvasElem.width = canvasElem.width; // Another way to clear the canvas
       }
 
-      ctx.save();
-      try {
-        settings.renderer(ctx, lastFrameMillisec);
+      if (offscreenBufferRequired && !offscreenCanvas) {
+        offscreenCanvas = document.createElement('canvas');
+        offscreenCanvas.width = w;
+        offscreenCanvas.height = h;
+        var tmpCtx = offscreenCanvas.getContext('2d');
+        tmpCtx.fillStyle = settings.bgColor || "#000000";
+        tmpCtx.fillRect(0, 0, w, h);
       }
-      catch (e) {
-        console.error(e);
-      }
-      ctx.restore();
 
+      var offscreenCtx = offscreenCanvas ? offscreenCanvas.getContext('2d') : null;
+
+      // Let the configured renderer draw
+      var renderCtx = offscreenCtx || screenCtx;
+      renderCtx.save();
+      settings.renderer(renderCtx, lastFrameMillisec);
+      renderCtx.restore();
+
+      // Map pixels through palette if it exists
+      if (palette && offscreenCtx) {
+        var screenImageData = screenCtx.getImageData(0, 0, w, h);
+        var screenData = screenImageData.data;
+        var offscreenImageData = offscreenCtx.getImageData(0, 0, w, h);
+        var offscreenData = offscreenImageData.data;
+
+        var num = w * 4  * h;
+        for (idx = 0; idx < num; idx += 4) {
+          var color = offscreenData[idx];
+          screenData[idx + 0] = palette[255 - color][0];
+          screenData[idx + 1] = palette[255 - color][1];
+          screenData[idx + 2] = palette[255 - color][2];
+          screenData[idx + 3] = 255;
+        }
+
+        screenCtx.putImageData(screenImageData, 0, 0);
+        //screenCtx.putImageData(offscreenImageData, 0, 0);
+      }
+
+      // Display FPS
       if (settings.showFps) {
         var fps = 1000 / lastFrameMillisec;
         if (fps) {
-          ctx.save();
-          ctx.font = "bold 20px 'Helvetica Neue', Helvetica, Arial, sans-serif";
+          screenCtx.save();
+          screenCtx.font = "bold 20px 'Helvetica Neue', Helvetica, Arial, sans-serif";
           var fpsText = "Fps: " + fps.toFixed(1 );
-          ctx.fillStyle = '#FFFFFF';
-          ctx.strokeStyle = '#444444';
-          ctx.fillText(fpsText, 10, 22);
-          ctx.strokeText(fpsText, 10, 22);
-          ctx.restore();
+          screenCtx.fillStyle = '#FFFFFF';
+          screenCtx.strokeStyle = '#444444';
+          screenCtx.fillText(fpsText, 10, 22);
+          screenCtx.strokeText(fpsText, 10, 22);
+          screenCtx.restore();
         }
+      }
+
+      // Display palette
+      if (palette && !!indexedColorConfig.displayPalette) {
+        screenCtx.save();
+        for (idx = 0; idx < palette.length; idx++) {
+          screenCtx.beginPath();
+          screenCtx.fillStyle = "rgb(" + palette[idx][0] + "," + palette[idx][1] + "," + palette[idx][2] + ")";
+          screenCtx.rect(idx, 0, 1, 20);
+          screenCtx.fill();
+        }
+        screenCtx.restore();
       }
     }
   }
