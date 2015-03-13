@@ -184,8 +184,41 @@ var AnimationHelper = (function () {
 
     var settings = $.extend({}, defaults, options);
 
+    function scaleCanvas(canvasElem, scaling) {
+      var wrap = canvasElem.parentNode;
+      var scaleX = window.innerWidth / canvasElem.width;
+      var scaleY = window.innerHeight / canvasElem.height;
+
+      var scale = 1;
+      switch (scaling) {
+        case "cover-window":
+          scale = Math.max(scaleX, scaleY);
+          break;
+        case "fit-window":
+        default:
+          scale = Math.min(scaleX, scaleY);
+      }
+
+      wrap.style.transformOrigin = "0 0"; //scale from top left
+      wrap.style.transform = "scale(" + scale + ")";
+    }
+
     return this.each(function() {
-      AnimationHelper.registerAnimCallback(createCanvasRenderer(this, settings));
+      var canvasElem = this;
+      if (!!settings.scaling) {
+        var $wrap = $("<div></div>").css({
+          "width": canvasElem.width + "px",
+          "height": canvasElem.height + "px"
+        });
+        $(canvasElem).css("position", "absolute").wrap($wrap);
+        function scaleThisCanvas() {
+          scaleCanvas(canvasElem, settings.scaling);
+        }
+        $(window).resize(scaleThisCanvas);
+        scaleThisCanvas();
+      }
+
+      AnimationHelper.registerAnimCallback(createCanvasRenderer(canvasElem, settings));
       AnimationHelper.startAnim();
     });
   };

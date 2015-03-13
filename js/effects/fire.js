@@ -107,6 +107,7 @@ $(window).load(function() {
   $("#fire-canvas").canvasAnimation({
     renderer: renderFire,
     noClear: true,
-    showFps: true
+    showFps: true,
+    scaling: "fit-window"
   });
 });

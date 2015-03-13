@@ -50,6 +50,7 @@ var renderStars = (function () {
 $(window).load(function() {
   $("#stars-canvas").canvasAnimation({
     renderer: renderStars,
-    bgColor: "rgba(0,0,0,0.2)"
+    bgColor: "rgba(0,0,0,0.2)",
+    scaling: "fit-window"
   });
 });
