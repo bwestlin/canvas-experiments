@@ -15,7 +15,7 @@ var renderStars = (function () {
     });
   }
 
-  return function renderStars(ctx) {
+  return function (ctx) {
     var canvas = ctx.canvas;
     var currMillisec = new Date().getTime();
     var time = (currMillisec - lastMillisec) | 0;
@@ -51,6 +51,7 @@ $(window).load(function() {
   $("#stars-canvas").canvasAnimation({
     renderer: renderStars,
     bgColor: "rgba(0,0,0,0.2)",
+    showFps: true,
     scaling: "fit-window"
   });
 });
