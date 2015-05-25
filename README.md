@@ -4,6 +4,8 @@ These are some graphical effects using the Html5 Canvas element that I'm current
 
 See it in action [here](https://rawgit.com/bwestlin/canvas-experiments/master/index.html).
 
+I also wrote an article about this experiment here: http://coding.bwestlin.se/2015/05/25/graphical-experiments-with-javascript-canvas/
+
 
 ## Licence ##
 
